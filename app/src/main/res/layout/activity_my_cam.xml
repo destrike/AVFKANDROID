@@ -16,10 +16,18 @@
             android:background="#000">
 
             <ImageView
+                android:id="@+id/btn_exit"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_action_remove" />
+
+            <ImageView
                 android:id="@+id/btn_flash"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
                 android:padding="5dp"
                 android:src="@drawable/ic_action_flash_off" />
 
@@ -48,12 +56,13 @@
             android:background="#000">
 
             <ImageView
-                android:id="@+id/btn_exit"
+                android:id="@+id/btn_home"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
+                android:layout_gravity="center_vertical"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_action_remove" />
+                android:src="@drawable/ic_action_remove"
+                android:onClick="goHome" />
 
             <com.melnykov.fab.FloatingActionButton
                 android:id="@+id/btn_take_photo"
@@ -71,5 +80,6 @@
                 android:layout_margin="5dp"
                 android:src="@drawable/ic_library_cam" />
         </RelativeLayout>
+
     </RelativeLayout>
 </FrameLayout>

@@ -47,6 +47,8 @@ package com.example.user.finderskeepers;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -68,6 +70,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import android.view.View.OnClickListener;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -85,10 +89,16 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     PictureCallback jpegCallback;
     ShutterCallback shutterCallback;
 
+    private String chooseFlash;
+    private ButtonClickListener btnClick;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cam);
+
+        btnClick= new ButtonClickListener();
         ButterKnife.inject(this);
         surfaceHolder = surfaceView.getHolder();
         // Install a surfaceHolder.Callback so we get notified when the
@@ -131,7 +141,66 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                 refreshGallery(picfile);
             }
         };
+
+        int idList[]={ R.id.btn_flash, R.id.btn_exit,};
+        for(int id:idList){ View v= findViewById(id);
+            v.setOnClickListener(btnClick);
+
+        }
     }
+
+//    public void goHome(View view) {
+//        finish();
+//        Intent onHome = new Intent (MyCam.this, MainActivity.class);
+//        startActivity(onHome);
+//
+//
+//    }
+
+    private class ButtonClickListener implements OnClickListener{
+        public void onClick(View v){
+
+            switch(v.getId()){
+                case R.id.btn_flash: chooseFlash();
+                    break;
+
+                case R.id.btn_exit:
+                    finish();
+                    Intent onHome = new Intent (MyCam.this, getHome.class);
+                    startActivity(onHome);
+                    break;
+
+              }
+
+        }
+
+    }
+
+    private void chooseFlash() {
+        final Camera.Parameters params = camera.getParameters();
+        final List<String> flashModeList = params.getSupportedFlashModes();
+        if (flashModeList == null) {
+            // no flash!
+            return;
+        }
+        final CharSequence[] flashText = flashModeList.toArray(
+                new CharSequence[flashModeList.size()]);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose flash type");
+        builder.setSingleChoiceItems(flashText, -1,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        params.setFlashMode(flashModeList.get(which));
+                        camera.setParameters(params);
+                        dialog.dismiss();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
 
     //refresh gallery
     public void refreshGallery(File file) {
@@ -139,6 +208,8 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         intent.setData(Uri.fromFile(file));
         sendBroadcast(intent);
     }
+
+
 
     public void refreshCamera() {
         if (surfaceHolder.getSurface() == null) {

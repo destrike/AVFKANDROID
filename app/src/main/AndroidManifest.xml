@@ -40,7 +40,13 @@
             android:label="@string/title_activity_my_vid" />
         <activity
             android:name=".MyCam"
-            android:label="@string/title_activity_my_cam"></activity>
+            android:label="@string/title_activity_my_cam" />
+        <activity
+            android:name=".camsaver"
+            android:label="@string/title_activity_camsaver" />
+        <activity
+            android:name=".getHome"
+            android:label="@string/title_activity_get_home"></activity>
     </application>
 
 </manifest>
