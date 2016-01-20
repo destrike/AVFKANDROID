@@ -71,14 +71,16 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     }
 
     public void onPhoto(View view) {
-        Intent onphoto = new Intent (this, MyCam.class);
+        Intent onphoto = new Intent (this, camsaver.class);
         startActivity(onphoto);
+        finish();
 
     }
 
     public void onVideo(View view) {
         Intent onvideo = new Intent (this, MyVid.class);
         startActivity(onvideo);
+        finish();
 
     }
 
