@@ -57,6 +57,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -89,6 +90,9 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     PictureCallback jpegCallback;
     ShutterCallback shutterCallback;
 
+    private static int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
+
+
     private String chooseFlash;
     private ButtonClickListener btnClick;
 
@@ -97,6 +101,12 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cam);
+
+        int camNum = 0;
+        camNum = Camera.getNumberOfCameras();
+        int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
+
+
 
         btnClick= new ButtonClickListener();
         ButterKnife.inject(this);
@@ -142,20 +152,15 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
             }
         };
 
-        int idList[]={ R.id.btn_flash, R.id.btn_exit,};
+        int idList[]={ R.id.btn_flash, R.id.btn_exit, R.id.btn_switch, };
         for(int id:idList){ View v= findViewById(id);
             v.setOnClickListener(btnClick);
 
         }
+
+
     }
 
-//    public void goHome(View view) {
-//        finish();
-//        Intent onHome = new Intent (MyCam.this, MainActivity.class);
-//        startActivity(onHome);
-//
-//
-//    }
 
     private class ButtonClickListener implements OnClickListener{
         public void onClick(View v){
@@ -170,10 +175,61 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                     startActivity(onHome);
                     break;
 
+                case R.id.btn_switch:
+
+
+                    camera.release();
+
+//swap the id of the camera to be used
+                    if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
+                        camIdBack = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                    }
+                    else {
+                        camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
+                    }
+                    camera = Camera.open(camIdBack);
+
+                    setCameraDisplayOrientation(MyCam.this, camIdBack, camera);
+                    try {
+
+                        camera.setPreviewDisplay(surfaceHolder);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    camera.startPreview();
+
+
+                    break;
+
               }
 
         }
 
+    }
+
+    public static void setCameraDisplayOrientation(Activity activity,
+                                                   int cameraId, android.hardware.Camera camera) {
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
     }
 
     private void chooseFlash() {
