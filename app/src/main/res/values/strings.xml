@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Finders Keepers</string>
+    <string name="title_activity_my_vid">MyVid</string>
+    <string name="title_activity_my_cam">MyCam</string>
+</resources>
