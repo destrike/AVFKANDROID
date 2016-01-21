@@ -1,53 +1,8 @@
 package com.example.user.finderskeepers;
 
-//import android.app.Activity;
-//import android.content.Intent;
-//import android.graphics.Bitmap;
-//import android.graphics.PixelFormat;
-//import android.os.Bundle;
-//import android.os.Environment;
-//import android.provider.MediaStore;
-//import android.util.Log;
-//import android.view.View;
-//import android.widget.Button;
-//import android.widget.Toast;
-//
-//import com.viniciusdsl.cameraview.library.CameraView;
-//import com.viniciusdsl.cameraview.library.listener.CameraListener;
-//
-//import java.io.File;
-//
-///**
-// * Created by User on 1/18/2016.
-// */
-//public class MyCam extends Activity {
-//
-//
-//    public CameraView cameraView;
-//    public Button cameraButton;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.camera);
-//
-//        openSesame();
-//
-//
-//    }
-//
-//    public void openSesame() {
-//        Intent intent = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(intent, 1);
-//
-//    }
-//
-//}
-
-
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Camera;
@@ -57,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -74,12 +30,19 @@ import java.util.Date;
 import java.util.List;
 import android.view.View.OnClickListener;
 
+
+import android.hardware.Camera.CameraInfo;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
+
+
+
+
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by tb_laota on 10/30/2015.
- */
+
 public class MyCam extends Activity implements SurfaceHolder.Callback {
     Camera camera;
     @InjectView(R.id.surfaceView)
@@ -87,8 +50,11 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     @InjectView(R.id.btn_take_photo)
     FloatingActionButton btn_take_photo;
     SurfaceHolder surfaceHolder;
-    PictureCallback jpegCallback;
+    PictureCallback jpegCallback, mpegCallback;
     ShutterCallback shutterCallback;
+    private MediaRecorder mediaRecorder;
+    Context myContext;
+    boolean recording = false;
 
     private static int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
 
@@ -101,11 +67,6 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cam);
-
-        int camNum = 0;
-        camNum = Camera.getNumberOfCameras();
-        int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
-
 
 
         btnClick= new ButtonClickListener();
@@ -134,7 +95,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                 }
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddhhmmss");
                 String date = simpleDateFormat.format(new Date());
-                String photofile = "Cam_Demo" + date + ".jpg";
+                String photofile = "FindersKeepers" + date + ".jpg";
                 String file_name = file_image.getPath() + File.separator + photofile;
                 File picfile = new File(file_name);
                 try {
@@ -152,7 +113,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
             }
         };
 
-        int idList[]={ R.id.btn_flash, R.id.btn_exit, R.id.btn_switch, };
+        int idList[]={ R.id.btn_flash, R.id.btn_exit, R.id.btn_switch, R.id.btn_vid, };
         for(int id:idList){ View v= findViewById(id);
             v.setOnClickListener(btnClick);
 
@@ -164,6 +125,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
     private class ButtonClickListener implements OnClickListener{
         public void onClick(View v){
+
 
             switch(v.getId()){
                 case R.id.btn_flash: chooseFlash();
@@ -178,9 +140,10 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                 case R.id.btn_switch:
 
 
+                    // if the camera preview is the front
                     camera.release();
 
-//swap the id of the camera to be used
+                    //swap the id of the camera to be used
                     if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
                         camIdBack = Camera.CameraInfo.CAMERA_FACING_FRONT;
                     }
@@ -201,6 +164,30 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
                     break;
 
+
+                    case R.id.btn_vid:
+
+                        if (recording==true) {
+                            // stop recording and release camera
+                            mediaRecorder.stop(); // stop the recording
+                            releaseMediaRecorder(); // release the MediaRecorder object
+                            Toast.makeText(MyCam.this, "Video captured!", Toast.LENGTH_LONG).show();
+                            recording = false;
+                        } else {
+
+                            prepareMediaRecorder();
+
+                            try {
+                                mediaRecorder.start();
+                                Toast.makeText(MyCam.this, "Recording!", Toast.LENGTH_LONG).show();
+                            } catch (final Exception ex) {
+                                // Log.i("---","Exception in thread");
+                            }
+                            recording = true;
+                        }
+
+
+                    break;
               }
 
         }
@@ -332,4 +319,67 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         camera.release();
         camera = null;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // when on Pause, release camera in order to be used from other
+        // applications
+//        releaseCamera();
+        camera.release();
+    }
+
+
+    private void releaseMediaRecorder() {
+        if (mediaRecorder != null) {
+            mediaRecorder.reset(); // clear recorder configuration
+            mediaRecorder.release(); // release the recorder object
+            mediaRecorder = null;
+            camera.lock(); // lock camera for later use
+        }
+    }
+
+    private boolean prepareMediaRecorder() {
+
+        mediaRecorder = new MediaRecorder();
+
+        camera.unlock();
+        mediaRecorder.setCamera(camera);
+
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+
+        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
+
+        mediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FindersKeeperVid.mp4");
+        mediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
+        mediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IllegalStateException e) {
+            releaseMediaRecorder();
+            return false;
+        } catch (IOException e) {
+            releaseMediaRecorder();
+            return false;
+        }
+        return true;
+
+    }
+
+    private void releaseCamera() {
+        // stop and release camera
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
+    }
+
+
+
+
+
+
 }
