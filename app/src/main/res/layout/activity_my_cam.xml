@@ -72,7 +72,7 @@
                 android:src="@drawable/ic_action_camera" />
 
             <ImageView
-                android:id="@+id/btn_lib"
+                android:id="@+id/btn_vid"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_alignParentRight="true"
