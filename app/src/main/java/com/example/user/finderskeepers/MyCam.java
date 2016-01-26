@@ -388,10 +388,15 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     private static final int MEDIA_TYPE_VIDEO = 1;
     protected boolean prepareForVideoRecording() {
 
-        
+
         camera.unlock();
         mr = new MediaRecorder();
         mr.setCamera(camera);
+//        if(MyCam.this.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+//            mr.setOrientationHint(90);
+//        }else{
+//            mr.setOrientationHint(0);
+//        }
         mr.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mr.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
@@ -405,6 +410,8 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         mr.setMaxFileSize(50000000); // Set max file size 50M
         mr.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
         mr.setPreviewDisplay(surfaceView.getHolder().getSurface());
+        mr.setOrientationHint(MyCam.getCameraDisplayOrientation(this,
+                        Camera.CameraInfo.CAMERA_FACING_BACK, camera));
 
 
         try {
@@ -450,6 +457,43 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
             mr = null;
             camera.lock();
         }
+    }
+
+    public static int getCameraDisplayOrientation(Activity activity,
+                                                  int cameraId, android.hardware.Camera camera)
+    {
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        int degrees = 0;
+        switch (rotation)
+        {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+        {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360; // compensate the mirror
+        } else
+        { // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+
+        return result;
     }
 
 
