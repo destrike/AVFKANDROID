@@ -5,14 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -31,7 +30,6 @@ import java.util.List;
 import android.view.View.OnClickListener;
 
 
-import android.hardware.Camera.CameraInfo;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 
@@ -54,12 +52,11 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     ShutterCallback shutterCallback;
     private MediaRecorder mediaRecorder;
     Context myContext;
-    boolean recording = false;
+    int recording = 0;
 
     private static int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
 
 
-    private String chooseFlash;
     private ButtonClickListener btnClick;
 
 
@@ -89,6 +86,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
             public void onPictureTaken(byte[] data, Camera camera) {
                 FileOutputStream outputStream = null;
                 File file_image = getDirc();
+
                 if (!file_image.exists() && !file_image.mkdirs()) {
                     Toast.makeText(getApplication(), "Can't create directory to save image", Toast.LENGTH_SHORT).show();
                     return;
@@ -98,6 +96,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                 String photofile = "FindersKeepers" + date + ".jpg";
                 String file_name = file_image.getPath() + File.separator + photofile;
                 File picfile = new File(file_name);
+                int rotate = 0;
                 try {
                     outputStream = new FileOutputStream(picfile);
                     outputStream.write(data);
@@ -105,12 +104,14 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                 } catch (FileNotFoundException e) {
                 } catch (IOException ex) {
                 } finally {
+                  }
 
-                }
+
                 Toast.makeText(getApplicationContext(), "Picture saved", Toast.LENGTH_SHORT).show();
                 refreshCamera();
                 refreshGallery(picfile);
             }
+
         };
 
         int idList[]={ R.id.btn_flash, R.id.btn_exit, R.id.btn_switch, R.id.btn_vid, };
@@ -146,14 +147,23 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                     //swap the id of the camera to be used
                     if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
                         camIdBack = Camera.CameraInfo.CAMERA_FACING_FRONT;
+
                     }
                     else {
                         camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
+
                     }
                     camera = Camera.open(camIdBack);
 
                     setCameraDisplayOrientation(MyCam.this, camIdBack, camera);
                     try {
+
+                        if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
+                            orientationCorrector();
+                        }
+                        else if (camIdBack == Camera.CameraInfo.CAMERA_FACING_FRONT){
+                            orientationCorrector2();
+                        }
 
                         camera.setPreviewDisplay(surfaceHolder);
                     } catch (IOException e) {
@@ -162,17 +172,19 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                     camera.startPreview();
 
 
+
                     break;
 
 
                     case R.id.btn_vid:
 
-                        if (recording==true) {
+                        if (recording==1) {
+
                             // stop recording and release camera
                             mediaRecorder.stop(); // stop the recording
                             releaseMediaRecorder(); // release the MediaRecorder object
                             Toast.makeText(MyCam.this, "Video captured!", Toast.LENGTH_LONG).show();
-                            recording = false;
+                            recording = 0;
                         } else {
 
                             prepareMediaRecorder();
@@ -183,7 +195,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
                             } catch (final Exception ex) {
                                 // Log.i("---","Exception in thread");
                             }
-                            recording = true;
+                            recording = 1;
                         }
 
 
@@ -193,6 +205,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         }
 
     }
+
 
     public static void setCameraDisplayOrientation(Activity activity,
                                                    int cameraId, android.hardware.Camera camera) {
@@ -216,7 +229,9 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
+
         camera.setDisplayOrientation(result);
+
     }
 
     private void chooseFlash() {
@@ -276,11 +291,15 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
     public File getDirc() {
         File dics = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        return new File(dics, "Camera_Demo");
+        return new File(dics, "FindersKeepers");
     }
 
     public void captureImage() {
         //take the picture
+
+
+
+
         camera.takePicture(null, null, jpegCallback);
     }
 
@@ -309,6 +328,16 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
+            orientationCorrector();
+        }
+        else if (camIdBack == Camera.CameraInfo.CAMERA_FACING_FRONT){
+            orientationCorrector2();
+        }
+
+
+
         refreshCamera();
     }
 
@@ -325,7 +354,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         super.onPause();
         // when on Pause, release camera in order to be used from other
         // applications
-//        releaseCamera();
+        releaseCamera();
         camera.release();
     }
 
@@ -368,6 +397,8 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
     }
 
+
+
     private void releaseCamera() {
         // stop and release camera
         if (camera != null) {
@@ -376,6 +407,30 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
             camera = null;
         }
     }
+
+    private void orientationCorrector() {
+        // stop and release camera
+        Camera.Parameters parameters=camera.getParameters();
+        if(this.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+            parameters.setRotation(90);
+        }else{
+            parameters.setRotation(0);
+        }
+        camera.setParameters(parameters);
+    }
+
+
+    private void orientationCorrector2() {
+        // stop and release camera
+        Camera.Parameters parameters=camera.getParameters();
+        if(this.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+            parameters.setRotation(180+90);
+        }else{
+            parameters.setRotation(90);
+        }
+        camera.setParameters(parameters);
+    }
+
 
 
 
