@@ -79,6 +79,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="5dp"
                 android:src="@drawable/ic_library_cam" />
+
         </RelativeLayout>
 
     </RelativeLayout>

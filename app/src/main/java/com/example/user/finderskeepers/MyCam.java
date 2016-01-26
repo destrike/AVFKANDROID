@@ -12,10 +12,12 @@ import android.hardware.Camera.ShutterCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -42,17 +44,19 @@ import butterknife.InjectView;
 
 
 public class MyCam extends Activity implements SurfaceHolder.Callback {
+    private static final String TAG = MyCam.class.getSimpleName();;
     Camera camera;
     @InjectView(R.id.surfaceView)
     SurfaceView surfaceView;
     @InjectView(R.id.btn_take_photo)
     FloatingActionButton btn_take_photo;
     SurfaceHolder surfaceHolder;
-    PictureCallback jpegCallback, mpegCallback;
+    PictureCallback jpegCallback;
     ShutterCallback shutterCallback;
     private MediaRecorder mediaRecorder;
     Context myContext;
     int recording = 0;
+    private Button recordVideoButton;
 
     private static int camIdBack = Camera.CameraInfo.CAMERA_FACING_BACK;
 
@@ -134,8 +138,8 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
                 case R.id.btn_exit:
                     finish();
-                    Intent onHome = new Intent (MyCam.this, getHome.class);
-                    startActivity(onHome);
+                    Intent goHome = new Intent (MyCam.this, getHome.class);
+                    startActivity(goHome);
                     break;
 
                 case R.id.btn_switch:
@@ -178,25 +182,27 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
                     case R.id.btn_vid:
 
-                        if (recording==1) {
 
-                            // stop recording and release camera
-                            mediaRecorder.stop(); // stop the recording
-                            releaseMediaRecorder(); // release the MediaRecorder object
+                        if (isRecording) {
+                            mr.stop();
+                            releaseMediaRecorder();
+                            camera.lock();
                             Toast.makeText(MyCam.this, "Video captured!", Toast.LENGTH_LONG).show();
-                            recording = 0;
+                            isRecording = false;
                         } else {
-
-                            prepareMediaRecorder();
-
-                            try {
-                                mediaRecorder.start();
-                                Toast.makeText(MyCam.this, "Recording!", Toast.LENGTH_LONG).show();
-                            } catch (final Exception ex) {
-                                // Log.i("---","Exception in thread");
+                            if (prepareForVideoRecording()) {
+                                mr.start();
+                                Toast.makeText(MyCam.this, "Video Recording!", Toast.LENGTH_LONG).show();
+                                isRecording = true;
+                            } else {
+                                // Something has gone wrong! Release the camera
+                                releaseMediaRecorder();
+                                Toast.makeText(MyCam.this,
+                                        "Sorry: couldn't start video",
+                                        Toast.LENGTH_LONG).show();
                             }
-                            recording = 1;
                         }
+
 
 
                     break;
@@ -206,7 +212,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
 
     }
 
-
+    //Photo Controls
     public static void setCameraDisplayOrientation(Activity activity,
                                                    int cameraId, android.hardware.Camera camera) {
         android.hardware.Camera.CameraInfo info =
@@ -349,64 +355,7 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
         camera = null;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // when on Pause, release camera in order to be used from other
-        // applications
-        releaseCamera();
-        camera.release();
-    }
-
-
-    private void releaseMediaRecorder() {
-        if (mediaRecorder != null) {
-            mediaRecorder.reset(); // clear recorder configuration
-            mediaRecorder.release(); // release the recorder object
-            mediaRecorder = null;
-            camera.lock(); // lock camera for later use
-        }
-    }
-
-    private boolean prepareMediaRecorder() {
-
-        mediaRecorder = new MediaRecorder();
-
-        camera.unlock();
-        mediaRecorder.setCamera(camera);
-
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
-
-        mediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/FindersKeeperVid.mp4");
-        mediaRecorder.setMaxDuration(600000); // Set max duration 60 sec.
-        mediaRecorder.setMaxFileSize(50000000); // Set max file size 50M
-
-        try {
-            mediaRecorder.prepare();
-        } catch (IllegalStateException e) {
-            releaseMediaRecorder();
-            return false;
-        } catch (IOException e) {
-            releaseMediaRecorder();
-            return false;
-        }
-        return true;
-
-    }
-
-
-
-    private void releaseCamera() {
-        // stop and release camera
-        if (camera != null) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
-        }
-    }
+    //Video Controls
 
     private void orientationCorrector() {
         // stop and release camera
@@ -432,6 +381,76 @@ public class MyCam extends Activity implements SurfaceHolder.Callback {
     }
 
 
+    private boolean isRecording = false;
+
+
+    private MediaRecorder mr;
+    private static final int MEDIA_TYPE_VIDEO = 1;
+    protected boolean prepareForVideoRecording() {
+
+        
+        camera.unlock();
+        mr = new MediaRecorder();
+        mr.setCamera(camera);
+        mr.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+        mr.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        if(camIdBack == Camera.CameraInfo.CAMERA_FACING_BACK){
+            mr.setProfile(CamcorderProfile.get(0,CamcorderProfile.QUALITY_HIGH));
+        }
+        else {
+            mr.setProfile(CamcorderProfile.get(1,CamcorderProfile.QUALITY_HIGH));
+        }
+//        mr.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        mr.setMaxDuration(600000); // Set max duration 60 sec.
+        mr.setMaxFileSize(50000000); // Set max file size 50M
+        mr.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+        mr.setPreviewDisplay(surfaceView.getHolder().getSurface());
+
+
+        try {
+
+            mr.prepare();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "IllegalStateException when preparing MediaRecorder "
+                    + e.getMessage());
+            e.getStackTrace();
+            releaseMediaRecorder();
+            return false;
+        } catch (IOException e) {
+            Log.e(TAG, "IOException when preparing MediaRecorder "
+                    + e.getMessage());
+            e.getStackTrace();
+            releaseMediaRecorder();
+            return false;
+        }
+        return true;
+
+
+    }
+
+    private File getOutputMediaFile(int type) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+        String date = simpleDateFormat.format(new Date());
+        File file_image = getDirc();
+// Get directory and timestamp as before
+         if (type == MEDIA_TYPE_VIDEO) {
+            return new File(file_image.getPath() + File.separator + "FindersKeepersVID"
+                    + date + ".mp4");
+        } else {
+            return null;
+        }
+    }
+
+
+
+    private void releaseMediaRecorder() {
+        if (mr != null) {
+            mr.reset();
+            mr.release();
+            mr = null;
+            camera.lock();
+        }
+    }
 
 
 
