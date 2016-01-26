@@ -21,6 +21,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".splash"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAINACTIVITY" />
 
@@ -37,16 +41,24 @@
         </activity>
         <activity
             android:name=".MyVid"
-            android:label="@string/title_activity_my_vid" />
+            android:label="@string/title_activity_my_vid"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MyCam"
-            android:label="@string/title_activity_my_cam" />
+            android:label="@string/title_activity_my_cam"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".camsaver"
-            android:label="@string/title_activity_camsaver" />
+            android:label="@string/title_activity_camsaver"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".getHome"
-            android:label="@string/title_activity_get_home"></activity>
+            android:label="@string/title_activity_get_home"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
