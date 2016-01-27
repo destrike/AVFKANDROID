@@ -31,13 +31,8 @@ import java.util.Date;
 import java.util.List;
 import android.view.View.OnClickListener;
 
-
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-
-
-
-
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

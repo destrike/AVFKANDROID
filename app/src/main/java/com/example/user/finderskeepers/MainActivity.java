@@ -16,6 +16,9 @@ import android.widget.Toast;
 import android.content.Context;
 import android.hardware.Camera;
 
+import define.Receiver;
+import ui.activity.custom.camera.CustomCamera;
+
 
 
 public class MainActivity extends Activity implements SurfaceHolder.Callback {
@@ -26,6 +29,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     private boolean previewRunning;
     final Context context = this;
     public static Camera camera = null;
+//    private ButtonClickListener btnClick;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -38,6 +42,12 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         camHolder = SurView.getHolder();
         camHolder.addCallback(this);
         camHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+//        int idList[]={ R.id.imageVideo };
+//        for(int id:idList){ View v= findViewById(id);
+//            v.setOnClickListener(btnClick);
+//
+//        }
 
 
         TabHost host = (TabHost)findViewById(R.id.tabHost);
@@ -78,10 +88,11 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
     }
 
     public void onVideo(View view) {
-        Intent onvideo = new Intent (this, camsaver.class);
+        Intent onvideo = new Intent (this, MyVid.class);
         startActivity(onvideo);
         finish();
 
+//
     }
 
     @Override
@@ -130,6 +141,28 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         camera.release();
         camera=null;
     }
+
+//    private class ButtonClickListener implements View.OnClickListener {
+//        public void onClick(View v){
+//
+//
+//            switch(v.getId()){
+//                case R.id.imageVideo:
+//                    // Open Custom Camera activity
+//                    Intent mIntentCamera = new Intent(MainActivity.this, CustomCamera.class);
+//                    // IF USER WANT GET FILE PATH OF ONE SELECTED FILE, SHOULD PUT ACTION_CHOSE_SINGLE_FILE
+//                    mIntentCamera.putExtra(
+//                            Receiver.EXTRAS_ACTION, Receiver.ACTION_CHOSE_SINGLE_FILE);
+//
+//                    startActivity(mIntentCamera);
+//                    break;
+//
+//
+//            }
+//
+//        }
+//
+//    }
 
 
 }

@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.permission.camera.autofocus" />
@@ -60,6 +62,18 @@
             android:label="@string/title_activity_get_home"
             android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="ui.activity.custom.camera.CustomCamera"
+            android:screenOrientation="portrait" />
+
+        <activity android:name="ui.activity.custom.gallery.CustomGallery" />
+        <!-- Receiver custom gallery and custom camera-->
+        <receiver android:name="BroadcastReceiverFileList">
+            <intent-filter>
+                <action android:name="ACTION_CHOSE_SINGLE_FILE" />
+                <action android:name="ACTION_CHOSE_MULTIPLE_FILE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

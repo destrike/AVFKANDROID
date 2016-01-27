@@ -25,4 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.jakewharton:butterknife:5.1.1'
     compile 'com.melnykov:floatingactionbutton:1.3.0'
+    compile ('eu.livotov.labs.android:CAMView:2.0.0@aar') {transitive=true}
+    compile 'android.mirrortowers:custom_camera_gallery:1.0.3'
 }
