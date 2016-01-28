@@ -7,6 +7,8 @@ import android.app.Activity;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.example.user.finderskeepers.define.Receiver;
+
 public class camsaver extends Activity {
 
     @Override
@@ -22,8 +24,12 @@ public class camsaver extends Activity {
             @Override
             public void run() {
                 finish();
-                Intent tocam = new Intent(camsaver.this, MyCam.class);
-                startActivity(tocam);
+                Intent mIntentCamera = new Intent(camsaver.this, CustomCamera.class);
+                // IF USER WANT GET FILE PATH OF ONE SELECTED FILE, SHOULD PUT ACTION_CHOSE_SINGLE_FILE
+                mIntentCamera.putExtra(
+                        Receiver.EXTRAS_ACTION, Receiver.ACTION_CHOSE_SINGLE_FILE);
+
+                startActivity(mIntentCamera);
             }
         }, timeout);
 

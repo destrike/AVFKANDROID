@@ -142,27 +142,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         camera=null;
     }
 
-//    private class ButtonClickListener implements View.OnClickListener {
-//        public void onClick(View v){
-//
-//
-//            switch(v.getId()){
-//                case R.id.imageVideo:
-//                    // Open Custom Camera activity
-//                    Intent mIntentCamera = new Intent(MainActivity.this, CustomCamera.class);
-//                    // IF USER WANT GET FILE PATH OF ONE SELECTED FILE, SHOULD PUT ACTION_CHOSE_SINGLE_FILE
-//                    mIntentCamera.putExtra(
-//                            Receiver.EXTRAS_ACTION, Receiver.ACTION_CHOSE_SINGLE_FILE);
-//
-//                    startActivity(mIntentCamera);
-//                    break;
-//
-//
-//            }
-//
-//        }
-//
-//    }
+
 
 
 }
