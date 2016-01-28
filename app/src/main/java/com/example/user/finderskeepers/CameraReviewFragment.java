@@ -68,10 +68,10 @@ public class CameraReviewFragment extends Fragment
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == mirrortowers.custom_camera_gallery_library.R.id.btn_retake) {
+        if (view.getId() == com.example.user.finderskeepers.define.R.id.btn_retake) {
             // Transfer to Camera Preview page by re-using fragment from Back Stack
             Utils.clearOldBackStack(getActivity());
-        } else if (view.getId() == mirrortowers.custom_camera_gallery_library.R.id.btn_use) {
+        } else if (view.getId() == com.example.user.finderskeepers.define.R.id.btn_use) {
             // Use taken photo for uploading
             // Need finish activity after set again single ton
             // Set File Path into single ton way
@@ -101,7 +101,7 @@ public class CameraReviewFragment extends Fragment
 //        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         View v = getLayoutInflater(savedInstanceState).inflate(
-                mirrortowers.custom_camera_gallery_library.R.layout.fragment_camera_review, container, false);
+                com.example.user.finderskeepers.define.R.layout.fragment_camera_review, container, false);
 
         // Initial views
         initialViews(v);
@@ -115,10 +115,10 @@ public class CameraReviewFragment extends Fragment
         super.onDestroyView();
 
         // Back to previous mode already chose : Photo mode or Video mode
-        if (!ui.fragment.custom.camera.CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE)
-            ui.fragment.custom.camera.CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE = true;
+        if (!CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE)
+            CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE = true;
         else
-            ui.fragment.custom.camera.CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE = false;
+            CameraPreviewFragment.IS_PHOTO_MODE_OR_VIDEO_MODE = false;
     }
 
     /**
@@ -135,7 +135,7 @@ public class CameraReviewFragment extends Fragment
             // Photo
 
             // Show Use Photo text
-            mBtnUse.setText(getString(mirrortowers.custom_camera_gallery_library.R.string.use_photo));
+            mBtnUse.setText(getString(com.example.user.finderskeepers.define.R.string.use_photo));
 
             // Hide Image View, Show Video View player
             mIvPhoto.setVisibility(View.VISIBLE);
@@ -149,7 +149,7 @@ public class CameraReviewFragment extends Fragment
             // Video
 
             // Show Use VDO text
-            mBtnUse.setText(getString(mirrortowers.custom_camera_gallery_library.R.string.use_video));
+            mBtnUse.setText(getString(com.example.user.finderskeepers.define.R.string.use_video));
 
             // Hide Image View, Show Video View player
             mIvPhoto.setVisibility(View.GONE);
@@ -163,10 +163,10 @@ public class CameraReviewFragment extends Fragment
     }
 
     private void initialViews(View v) {
-        mBtnRetake = (Button) v.findViewById(mirrortowers.custom_camera_gallery_library.R.id.btn_retake);
-        mBtnUse = (Button) v.findViewById(mirrortowers.custom_camera_gallery_library.R.id.btn_use);
-        mIvPhoto = (ImageView) v.findViewById(mirrortowers.custom_camera_gallery_library.R.id.iv_review_photo);
-        mVvVideo = (VideoView) v.findViewById(mirrortowers.custom_camera_gallery_library.R.id.vv_review_video);
+        mBtnRetake = (Button) v.findViewById(com.example.user.finderskeepers.define.R.id.btn_retake);
+        mBtnUse = (Button) v.findViewById(com.example.user.finderskeepers.define.R.id.btn_use);
+        mIvPhoto = (ImageView) v.findViewById(com.example.user.finderskeepers.define.R.id.iv_review_photo);
+        mVvVideo = (VideoView) v.findViewById(com.example.user.finderskeepers.define.R.id.vv_review_video);
     }
 
     private void showPhotoOnUI(boolean is_success) {
@@ -220,7 +220,7 @@ public class CameraReviewFragment extends Fragment
                 /**
                  * Need check front or back image also to flip captured image
                  */
-                if (!ui.fragment.custom.camera.CameraPreviewFragment.IS_BACK_CAMERA_OR_FRONT_CAMERA) {
+                if (!CameraPreviewFragment.IS_BACK_CAMERA_OR_FRONT_CAMERA) {
                     // Back Camera
 
                     // create bitmap
@@ -229,7 +229,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    0, (int) (ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate),
+                                    0, (int) (CameraPreviewFragment.top_bar * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -238,7 +238,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    (int) (ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate), 0,
+                                    (int) (CameraPreviewFragment.top_bar * scaled_rate), 0,
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -247,7 +247,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    0, (int) (ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate),
+                                    0, (int) (CameraPreviewFragment.top_bar * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -256,7 +256,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    (int) (ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate), 0,
+                                    (int) (CameraPreviewFragment.top_bar * scaled_rate), 0,
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -274,7 +274,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    0, (int) ((ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate)),
+                                    0, (int) ((CameraPreviewFragment.top_bar * scaled_rate)),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -283,7 +283,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    (int) ((ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate)), 0,
+                                    (int) ((CameraPreviewFragment.top_bar * scaled_rate)), 0,
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -292,7 +292,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    0, (int) ((ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate)),
+                                    0, (int) ((CameraPreviewFragment.top_bar * scaled_rate)),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -301,7 +301,7 @@ public class CameraReviewFragment extends Fragment
                             resizedBitmap = Bitmap.createBitmap(
                                     mBitmapRotated,
                                     // Define X, Y where to begin crop
-                                    (int) ((ui.fragment.custom.camera.CameraPreviewFragment.top_bar * scaled_rate)), 0,
+                                    (int) ((CameraPreviewFragment.top_bar * scaled_rate)), 0,
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     (int) (Utils.getSizeOfScreen(getActivity())[0] * scaled_rate),
                                     matrix, true);
@@ -321,7 +321,7 @@ public class CameraReviewFragment extends Fragment
                  */
 
                 // Set image on View
-                if (!ui.fragment.custom.camera.CameraPreviewFragment.IS_BACK_CAMERA_OR_FRONT_CAMERA) {
+                if (!CameraPreviewFragment.IS_BACK_CAMERA_OR_FRONT_CAMERA) {
                     // Back Camera
 
                     // Rotate Front photo need again in here

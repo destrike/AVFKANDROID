@@ -23,9 +23,7 @@ import ui.activity.custom.gallery.CustomGallery;
 //import ui.activity.custom.gallery.CustomGallery;
 //import ui.fragment.custom.camera.CameraPreviewFragment;
 
-/**
- * Created by trek2000 on 25/2/2015.
- */
+
 public class CustomCamera extends FragmentActivity
         implements View.OnClickListener {
 
