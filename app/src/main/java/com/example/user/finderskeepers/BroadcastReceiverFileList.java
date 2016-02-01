@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import define.Receiver;
+import com.example.user.finderskeepers.define.Receiver;
 /**
  * Created by User on 1/27/2016.
  */

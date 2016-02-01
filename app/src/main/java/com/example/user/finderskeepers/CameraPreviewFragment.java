@@ -35,8 +35,8 @@ import java.util.Date;
 import define.Extension;
 import com.example.user.finderskeepers.define.Folder;
 import com.example.user.finderskeepers.define.R;
-import surface.CustomCameraPreview;
-import utils.Utils;
+import com.example.user.finderskeepers.surface.CustomCameraPreview;
+import com.example.user.finderskeepers.utils.Utils;
 
 //import define.Extension;
 //import define.Folder;

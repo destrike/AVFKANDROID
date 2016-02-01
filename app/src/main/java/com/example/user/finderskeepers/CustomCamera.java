@@ -15,7 +15,7 @@ import android.view.View;
 import com.example.user.finderskeepers.define.Receiver;
 import com.example.user.finderskeepers.define.R;
 //import com.example.user.finderskeepers.R;
-import ui.activity.custom.gallery.CustomGallery;
+import com.example.user.finderskeepers.gallery.CustomGallery;
 
 
 //import define.Receiver;

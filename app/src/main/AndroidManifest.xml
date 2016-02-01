@@ -61,7 +61,7 @@
             android:name="CustomCamera"
             android:screenOrientation="portrait" />
 
-        <activity android:name="ui.activity.custom.gallery.CustomGallery" />
+        <activity android:name="com.example.user.finderskeepers.gallery.CustomGallery" />
         <!-- Receiver custom gallery and custom camera-->
         <receiver android:name="BroadcastReceiverFileList">
             <intent-filter>

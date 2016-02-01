@@ -20,12 +20,12 @@ import android.widget.VideoView;
 
 import java.io.File;
 
-import controller.SaveBitmapToFileAsync;
+import com.example.user.finderskeepers.controller.SaveBitmapToFileAsync;
 import define.MediaType;
 import define.Receiver;
 //import ui.activity.custom.camera.CustomCamera;
 import ui.fragment.custom.camera.*;
-import utils.Utils;
+import com.example.user.finderskeepers.utils.Utils;
 
 
 
